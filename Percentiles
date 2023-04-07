@@ -1,0 +1,31 @@
+#Tablas con percentiles
+
+def percentiles(nombre_del_archivo,año_inicio,año_final):
+
+    datos_a_trabajar=obtencion_datos(nombre_del_archivo)
+
+    tabla_general_min=[['Percentil','E','F','M','A','M','J','J','A','S','O','N','D']]
+    tabla_general_max=[['Percentil','E','F','M','A','M','J','J','A','S','O','N','D']]
+
+    for percentil in range (5,100,5):
+        
+        percentil_por_mes_min=[percentil]
+        percentil_por_mes_max=[percentil]
+        
+        for mes in range (1,13):
+            
+            minimas=list(datos_a_trabajar.loc[(datos_a_trabajar[1] == mes)][4])
+            percentil_por_mes_min.append(np.round(np.nanpercentile(minimas,percentil), decimals=1))
+            maximas=list(datos_a_trabajar.loc[(datos_a_trabajar[1] == mes)][3])
+            percentil_por_mes_max.append(np.round(np.nanpercentile(maximas,percentil), decimals=1))
+            
+        tabla_general_min.append(percentil_por_mes_min)
+        tabla_general_max.append(percentil_por_mes_max)
+
+    A=tabulate.tabulate(tabla_general_min,tablefmt="github")
+    B=tabulate.tabulate(tabla_general_max,tablefmt="github")
+    
+    print("Percentiles temperatura mínima")
+    print(A)
+    print("Percentiles temperatura máxima")
+    print(B)
