@@ -1,0 +1,107 @@
+#Se muestra una tabla con los récords de temperatura mínima y máxima (valores más altos y más bajos).
+def records(nombre_del_archivo,año_inicio,año_final):
+
+    archivo_con_datos="{}.xlsx".format(nombre_del_archivo)
+    datos=pd.read_excel(archivo_con_datos, header=None)
+    datos=datos.drop([0])
+    
+    for i in range(0,3):
+        datos[i]=datos[i].astype(int)
+    datos[3]=datos[3].astype(float).round(1)
+    datos[4]=datos[4].astype(float).round(1)
+
+    datos_a_trabajar=datos[(datos.iloc[:, 0] >= año_inicio) & (datos.iloc[:, 0] <= año_final)]
+
+    #año_inicio=datos_a_trabajar.iat[0,0]
+    #año_final=datos_a_trabajar.iat[len(datos_a_trabajar)-1,0]
+
+    tabla_general=[['','E','F','M','A','M','J','J','A','S','O','N','D']]
+    
+    lista_min_mas_baja=[]
+    lista_dia_min_mas_baja=[]
+    lista_año_min_mas_baja=[]
+
+    lista_min_mas_alta=[]
+    lista_dia_min_mas_alta=[]
+    lista_año_min_mas_alta=[]
+
+    lista_max_mas_baja=[]
+    lista_dia_max_mas_baja=[]
+    lista_año_max_mas_baja=[]
+
+    lista_max_mas_alta=[]
+    lista_dia_max_mas_alta=[]
+    lista_año_max_mas_alta=[]
+    
+    for mes in range (1,13):
+        
+        datos_mínimas=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes)][4]
+        
+        min_mas_baja=np.nanmin(datos_mínimas)
+        lista_min_mas_baja.append(min_mas_baja)
+        dia_min_mas_baja=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[4] == min_mas_baja)][2]
+        lista_dia_min_mas_baja.append(dia_min_mas_baja.to_string(index=False))
+        año_min_mas_baja=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[4] == min_mas_baja)][0]
+        lista_año_min_mas_baja.append(año_min_mas_baja.to_string(index=False))
+
+        min_mas_alta=np.nanmax(datos_mínimas)
+        lista_min_mas_alta.append(min_mas_alta)
+        dia_min_mas_alta=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[4] == min_mas_alta)][2]
+        lista_dia_min_mas_alta.append(dia_min_mas_alta.to_string(index=False))
+        año_min_mas_alta=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[4] == min_mas_alta)][0]
+        lista_año_min_mas_alta.append(año_min_mas_alta.to_string(index=False))
+
+        datos_máximas=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes)][3]
+        
+        max_mas_baja=np.nanmin(datos_máximas)
+        lista_max_mas_baja.append(max_mas_baja)
+        dia_max_mas_baja=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[3] == max_mas_baja)][2]
+        lista_dia_max_mas_baja.append(dia_max_mas_baja.to_string(index=False))
+        año_max_mas_baja=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[3] == max_mas_baja)][0]
+        lista_año_max_mas_baja.append(año_max_mas_baja.to_string(index=False))
+
+        max_mas_alta=np.nanmax(datos_máximas)
+        lista_max_mas_alta.append(max_mas_alta)
+        dia_max_mas_alta=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[3] == max_mas_alta)][2]
+        lista_dia_max_mas_alta.append(dia_max_mas_alta.to_string(index=False))
+        año_max_mas_alta=datos_a_trabajar.loc[(datos_a_trabajar[1] == mes) &(datos_a_trabajar[3] == max_mas_alta)][0]
+        lista_año_max_mas_alta.append(año_max_mas_alta.to_string(index=False))        
+
+    lista_dia_min_mas_baja = [x.replace('\n', ',') for x in lista_dia_min_mas_baja]
+    lista_año_min_mas_baja = [x.replace('\n', ',') for x in lista_año_min_mas_baja]
+    fechas_min_mas_baja=['Fecha']
+    for dia,mes,año in zip(lista_dia_min_mas_baja,range(1,13),lista_año_min_mas_baja):
+        fechas_min_mas_baja.append("{}-{}-{}".format(dia,mes,año))
+    lista_min_mas_baja.insert(0,'Tnn')            
+    tabla_general.append(lista_min_mas_baja)
+    tabla_general.append(fechas_min_mas_baja)
+
+    lista_dia_min_mas_alta = [x.replace('\n', ',') for x in lista_dia_min_mas_alta]
+    lista_año_min_mas_alta = [x.replace('\n', ',') for x in lista_año_min_mas_alta]
+    fechas_min_mas_alta=['Fecha']
+    for dia,mes,año in zip(lista_dia_min_mas_alta,range(1,13),lista_año_min_mas_alta):
+        fechas_min_mas_alta.append("{}-{}-{}".format(dia,mes,año))
+    lista_min_mas_alta.insert(0,'Tnx') 
+    tabla_general.append(lista_min_mas_alta)
+    tabla_general.append(fechas_min_mas_alta)
+
+    lista_dia_max_mas_baja = [x.replace('\n', ',') for x in lista_dia_max_mas_baja]
+    lista_año_max_mas_baja = [x.replace('\n', ',') for x in lista_año_max_mas_baja]
+    fechas_max_mas_baja=['Fecha']
+    for dia,mes,año in zip(lista_dia_max_mas_baja,range(1,13),lista_año_max_mas_baja):
+        fechas_max_mas_baja.append("{}-{}-{}".format(dia,mes,año))
+    lista_max_mas_baja.insert(0,'Txn')
+    tabla_general.append(lista_max_mas_baja)
+    tabla_general.append(fechas_max_mas_baja)
+
+    lista_dia_max_mas_alta = [x.replace('\n', ',') for x in lista_dia_max_mas_alta]
+    lista_año_max_mas_alta = [x.replace('\n', ',') for x in lista_año_max_mas_alta]
+    fechas_max_mas_alta=['Fecha']
+    for dia,mes,año in zip(lista_dia_max_mas_alta,range(1,13),lista_año_max_mas_alta):
+        fechas_max_mas_alta.append("{}-{}-{}".format(dia,mes,año))
+    lista_max_mas_alta.insert(0,'Txx')
+    tabla_general.append(lista_max_mas_alta)
+    tabla_general.append(fechas_max_mas_alta)
+    
+    A=tabulate.tabulate(list(map(list, zip(*tabla_general))),tablefmt="github")
+    print(A)
