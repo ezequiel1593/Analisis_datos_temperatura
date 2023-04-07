@@ -1,0 +1,36 @@
+def cantidad_datos_faltantes_por_mes(nombre_del_archivo):
+    
+    datos_a_trabajar=obtencion_datos(nombre_del_archivo)
+
+    año_inicio=datos_a_trabajar.iat[0,0]
+    año_final=datos_a_trabajar.iat[len(datos_a_trabajar)-1,0]
+
+    tabla_general_min=[[x for x in range(año_inicio,año_final+1)]]
+    tabla_general_max=[[x for x in range(año_inicio,año_final+1)]]
+    
+    for mes in range (1,13):
+        
+        cantidad_min_por_mes=[]
+        cantidad_max_por_mes=[]
+        
+        for año in range(año_inicio,año_final + 1):
+            
+            minimas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][4])
+            cantidad_de_valores_nan_min=sum(math.isnan(x) for x in minimas)
+            cantidad_min_por_mes.append(cantidad_de_valores_nan_min)
+                
+            maximas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][3])
+            cantidad_de_valores_nan_max=sum(math.isnan(x) for x in maximas)
+            cantidad_max_por_mes.append(cantidad_de_valores_nan_max)
+                
+        tabla_general_min.append(cantidad_min_por_mes)
+        tabla_general_max.append(cantidad_max_por_mes)
+
+    tabla_general_min_transpuesta=list(map(list, zip(*tabla_general_min)))
+    tabla_general_max_transpuesta=list(map(list, zip(*tabla_general_max)))
+
+    A=tabulate.tabulate(tabla_general_min_transpuesta,tablefmt="github",headers=['Año','E','F','M','A','M','J','J','A','S','O','N','D'])
+    B=tabulate.tabulate(tabla_general_max_transpuesta,tablefmt="github",headers=['Año','E','F','M','A','M','J','J','A','S','O','N','D'])
+
+    print(A)
+    print(B)
