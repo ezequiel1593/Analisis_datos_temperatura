@@ -1,0 +1,24 @@
+import glob
+import pandas as pd
+import numpy as np
+import numpy.ma as ma
+import math
+import tabulate
+import matplotlib.pyplot as plt
+import statistics
+import seaborn as sns
+
+
+def obtencion_datos(nombre_del_archivo):
+
+    archivo_con_datos="{}.xlsx".format(nombre_del_archivo)
+    datos=pd.read_excel(archivo_con_datos, header=None)
+    datos=datos.drop([0])
+    
+    for i in range(0,3):
+        datos[i]=datos[i].astype(int)
+    datos[3]=datos[3].astype(float).round(1)
+    datos[4]=datos[4].astype(float).round(1)
+
+    datos_a_trabajar=datos[(datos.iloc[:, 0] >= 1906) & (datos.iloc[:, 0] <= 2023)]
+    return datos_a_trabajar
