@@ -1,0 +1,80 @@
+#Tablas con extremos mensuales de temperatura.
+
+def extremos_mensuales(nombre_del_archivo,imprimir=False):
+    
+    datos_a_trabajar=obtencion_datos(nombre_del_archivo)
+
+    año_inicio=datos_a_trabajar.iat[0,0]
+    año_final=datos_a_trabajar.iat[len(datos_a_trabajar)-1,0]
+
+    tabla_general_tnn=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+    tabla_general_tnx=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+    tabla_general_txn=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+    tabla_general_txx=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+
+    for año in range(año_inicio,año_final + 1):
+        
+        tnn_mensuales=[año]
+        tnx_mensuales=[año]
+        txn_mensuales=[año]
+        txx_mensuales=[año]
+        
+        for mes in range (1,13):
+            
+            minimas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][4])
+            cantidad_de_valores_nan_min=sum(math.isnan(x) for x in minimas)
+            if mes == 2:
+                if (año not in [1920,1948,1976,2004,2032]) and (cantidad_de_valores_nan_min > 4):
+                    tnn_mensuales.append('')
+                    tnx_mensuales.append('')
+                    continue
+            if cantidad_de_valores_nan_min > 5:
+                tnn_mensuales.append('')
+                tnx_mensuales.append('')
+            else:
+                tnn_mensuales.append(np.nanmin(minimas))
+                tnx_mensuales.append(np.nanmax(minimas))
+
+        for mes in range (1,13):
+                
+            maximas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][3])
+            cantidad_de_valores_nan_max=sum(math.isnan(x) for x in maximas)
+            if mes == 2:
+                if (año not in [1920,1948,1976,2004,2032]) and (cantidad_de_valores_nan_min > 4):
+                    txn_mensuales.append('')
+                    txx_mensuales.append('')
+                    continue
+            if cantidad_de_valores_nan_max > 5:
+                txn_mensuales.append('')
+                txx_mensuales.append('')
+            else:
+                txn_mensuales.append(np.nanmin(maximas))
+                txx_mensuales.append(np.nanmax(maximas))
+                
+        tabla_general_tnn.append(tnn_mensuales)
+        tabla_general_tnx.append(tnx_mensuales)
+        tabla_general_txn.append(txn_mensuales)
+        tabla_general_txx.append(txx_mensuales)
+
+    tabla_general_tnn_transpuesta=list(map(list, zip(*tabla_general_tnn)))
+    tabla_general_tnx_transpuesta=list(map(list, zip(*tabla_general_tnx)))
+    tabla_general_txn_transpuesta=list(map(list, zip(*tabla_general_txn)))
+    tabla_general_txx_transpuesta=list(map(list, zip(*tabla_general_txx)))
+
+    if imprimir:
+        
+        A=tabulate.tabulate(tabla_general_tnn,tablefmt="github")
+        B=tabulate.tabulate(tabla_general_tnx,tablefmt="github")
+        C=tabulate.tabulate(tabla_general_txn,tablefmt="github")
+        D=tabulate.tabulate(tabla_general_txx,tablefmt="github")
+
+        print("Temperaturas mínimas más bajas")
+        print(A)
+        print("Temperaturas mínimas más altas")
+        print(B)
+        print("Temperaturas máximas más bajas")
+        print(C)
+        print("Temperaturas máximas más altas")
+        print(D)
+
+    return([tabla_general_tnn_transpuesta,tabla_general_tnx_transpuesta,tabla_general_txn_transpuesta,tabla_general_txx_transpuesta])
