@@ -1,0 +1,126 @@
+#Tablas con medias estacionales.
+#Para este caso, se usó como criterio no más de 15% de datos faltantes.
+
+def medias_estacionales(nombre_del_archivo,imprimir=False):
+
+    datos_a_trabajar=obtencion_datos(nombre_del_archivo)
+
+    tabla_general_min=[['Año','V','O','I','P']]
+    tabla_general_max=[['Año','V','O','I','P']]
+
+    año_inicio=datos_a_trabajar.iat[0,0]
+    año_final=datos_a_trabajar.iat[len(datos_a_trabajar)-1,0]
+
+    for año in range(año_inicio,año_final + 1):
+        
+        min_med=[año]
+        max_med=[año]
+
+        if año==año_inicio:
+            min_med.append('')
+            max_med.append('')
+            
+        else:
+            minimas=[]
+            minimas_dic=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año-1) &(datos_a_trabajar[1] == 12)][4])
+            minimas_ene_feb=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] >= 1) &(datos_a_trabajar[1] <= 2)][4])
+            for tn in minimas_dic:
+                minimas.append(tn)
+            for tn in minimas_ene_feb:
+                minimas.append(tn)
+            cantidad_de_valores_nan_min=sum(math.isnan(x) for x in minimas)
+            total= len(minimas)
+            if (cantidad_de_valores_nan_min / total) > 0.15:
+                min_med.append('')
+            else:
+                min_med.append(np.round(np.nanmean(minimas), decimals=1))
+
+            maximas=[]
+            maximas_dic=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año-1) &(datos_a_trabajar[1] == 12)][3])
+            maximas_ene_feb=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] >= 1) &(datos_a_trabajar[1] <= 2)][3])
+            for tx in maximas_dic:
+                maximas.append(tx)
+            for tx in maximas_ene_feb:
+                maximas.append(tx)
+            cantidad_de_valores_nan_max=sum(math.isnan(x) for x in maximas)
+            total= len(maximas)
+            if (cantidad_de_valores_nan_max / total) > 0.15:
+                max_med.append('')
+            else:
+                max_med.append(np.round(np.nanmean(maximas), decimals=1))
+        
+
+        for mes in [[3,5],[6,8],[9,11]]:
+
+            minimas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] >= mes[0]) &(datos_a_trabajar[1] <= mes[1])][4])
+            cantidad_de_valores_nan_min=sum(math.isnan(x) for x in minimas)
+            total= len(minimas)
+            if (cantidad_de_valores_nan_min / total) > 0.15:
+                min_med.append('')
+            else:
+                min_med.append(np.round(np.nanmean(minimas), decimals=1))
+
+            maximas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] >= mes[0]) &(datos_a_trabajar[1] <= mes[1])][3])
+            cantidad_de_valores_nan_max=sum(math.isnan(x) for x in maximas)
+            total= len(maximas)
+            if (cantidad_de_valores_nan_max / total) > 0.15:
+                max_med.append('')
+            else:
+                max_med.append(np.round(np.nanmean(maximas), decimals=1))
+
+        tabla_general_min.append(min_med)
+        tabla_general_max.append(max_med)
+
+    if imprimir:
+
+        record_min_tn=['Lo']
+        año_record_min_tn=['Y']
+        record_max_tn=['Hi']
+        año_record_max_tn=['Y']
+        
+        record_min_tx=['Lo']
+        año_record_min_tx=['Y']
+        record_max_tx=['Hi']
+        año_record_max_tx=['Y']
+
+        tabla_general_min_med_transpuesta=list(map(list, zip(*tabla_general_min)))
+        tabla_general_max_med_transpuesta=list(map(list, zip(*tabla_general_max)))
+            
+        for season in range(1,5):
+            
+            años=tabla_general_min_med_transpuesta[0][1:]
+
+            minimas=[np.NaN if x=='' else x for x in tabla_general_min_med_transpuesta[season][1:]]
+
+            record_min_tn.append(np.nanmin(minimas))
+            año_record_min_tn.append(años[minimas.index(np.nanmin(minimas))])
+            record_max_tn.append(np.nanmax(minimas))
+            año_record_max_tn.append(años[minimas.index(np.nanmax(minimas))])
+
+            maximas=[np.NaN if x=='' else x for x in tabla_general_max_med_transpuesta[season][1:]]
+            
+            record_min_tx.append(np.nanmin(maximas))
+            año_record_min_tx.append(años[maximas.index(np.nanmin(maximas))])
+            record_max_tx.append(np.nanmax(maximas))
+            año_record_max_tx.append(años[maximas.index(np.nanmax(maximas))])
+
+        tabla_general_min.append(['Año','V','O','I','P'])
+        tabla_general_max.append(['Año','V','O','I','P'])
+
+        tabla_general_min.append(record_min_tn)
+        tabla_general_min.append(año_record_min_tn)
+        tabla_general_min.append(record_max_tn)
+        tabla_general_min.append(año_record_max_tn)
+        tabla_general_max.append(record_min_tx)
+        tabla_general_max.append(año_record_min_tx)
+        tabla_general_max.append(record_max_tx)
+        tabla_general_max.append(año_record_max_tx)
+
+        A=tabulate.tabulate(tabla_general_min,tablefmt="github")
+        B=tabulate.tabulate(tabla_general_max,tablefmt="github")
+        print(A)
+        print(B)
+
+    tabla_general_min_med_transpuesta=list(map(list, zip(*tabla_general_min)))
+    tabla_general_max_med_transpuesta=list(map(list, zip(*tabla_general_max)))
+    return [tabla_general_min_med_transpuesta,tabla_general_max_med_transpuesta]
