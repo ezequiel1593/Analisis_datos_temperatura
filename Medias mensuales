@@ -1,4 +1,7 @@
 #Tablas con medias mensuales.
+#No se computan en aquellos casos en los que hay más de 5 datos faltantes, excepto en los meses de febrero no empezados en domingo si el año es bisiesto
+#(1920,1948,1976,2004) y en los meses de febrero de años no bisiestos, en estos casos la cantidad de datos faltantes no podrá exceder de 4.
+
 def medias_mensuales(nombre_del_archivo,imprimir=False):
     
     datos_a_trabajar=obtencion_datos(nombre_del_archivo)
