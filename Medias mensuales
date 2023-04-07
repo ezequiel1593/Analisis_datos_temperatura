@@ -1,0 +1,107 @@
+#Tablas con medias mensuales.
+def medias_mensuales(nombre_del_archivo,imprimir=False):
+    
+    datos_a_trabajar=obtencion_datos(nombre_del_archivo)
+
+    tabla_general_min=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+    tabla_general_max=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+
+    año_inicio=datos_a_trabajar.iat[0,0]
+    año_final=datos_a_trabajar.iat[len(datos_a_trabajar)-1,0]
+
+    for año in range(año_inicio,año_final + 1):
+        
+        min_med_mensuales=[año]
+        max_med_mensuales=[año]
+        
+        for mes in range (1,13):
+            
+            minimas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][4])
+            cantidad_de_valores_nan_min=sum(math.isnan(x) for x in minimas)
+            if (mes == 2) and (año not in [1920,1948,1976,2004,2032]) and (cantidad_de_valores_nan_min > 4):
+                min_med_mensuales.append('')
+                continue
+            if cantidad_de_valores_nan_min > 5:
+                min_med_mensuales.append('')
+            else:
+                min_med_mensuales.append(np.round(np.nanmean(minimas), decimals=1))
+
+        for mes in range (1,13):
+                
+            maximas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][3])
+            cantidad_de_valores_nan_max=sum(math.isnan(x) for x in maximas)
+            if (mes == 2) and (año not in [1920,1948,1976,2004,2032]) and (cantidad_de_valores_nan_max > 4):
+                max_med_mensuales.append('')
+                continue
+            if cantidad_de_valores_nan_max > 5:
+                max_med_mensuales.append('')
+            else:
+                max_med_mensuales.append(np.round(np.nanmean(maximas), decimals=1))
+                
+        tabla_general_min.append(min_med_mensuales)
+        tabla_general_max.append(max_med_mensuales)
+
+    if imprimir:
+        
+        record_mensual_min_tn=['Lo']
+        año_record_mensual_min_tn=['Y']
+        record_mensual_max_tn=['Hi']
+        año_record_mensual_max_tn=['Y']
+        
+        record_mensual_min_tx=['Lo']
+        año_record_mensual_min_tx=['Y']
+        record_mensual_max_tx=['Hi']
+        año_record_mensual_max_tx=['Y']
+            
+        for mes in range(1,13):
+            
+            aux_min=[]
+            año_min=[]
+            aux_max=[]
+            año_max=[]
+            
+            for indice,año in zip(range(1,len(tabla_general_min) -1),range(año_inicio,año_final +1)):
+                try:
+                    aux_min.append(float(tabla_general_min[indice][mes]))
+                    año_min.append(año)
+                except ValueError:
+                    pass
+                
+            for indice,año in zip(range(1,len(tabla_general_max) -1),range(año_inicio,año_final +1)):
+                try:
+                    aux_max.append(float(tabla_general_max[indice][mes]))
+                    año_max.append(año)
+                except ValueError:
+                    pass
+                
+            record_mensual_min_tn.append(min(aux_min))
+            año_record_mensual_min_tn.append(año_min[aux_min.index(min(aux_min))])
+            record_mensual_max_tn.append(max(aux_min))
+            año_record_mensual_max_tn.append(año_min[aux_min.index(max(aux_min))])
+
+            record_mensual_min_tx.append(min(aux_max))
+            año_record_mensual_min_tx.append(año_max[aux_max.index(min(aux_max))])
+            record_mensual_max_tx.append(max(aux_max))
+            año_record_mensual_max_tx.append(año_max[aux_max.index(max(aux_max))])
+
+        tabla_general_min.append(['Año','E','F','M','A','M','J','J','A','S','O','N','D'])
+        tabla_general_max.append(['Año','E','F','M','A','M','J','J','A','S','O','N','D'])
+
+        tabla_general_min.append(record_mensual_min_tn)
+        tabla_general_min.append(año_record_mensual_min_tn)
+        tabla_general_min.append(record_mensual_max_tn)
+        tabla_general_min.append(año_record_mensual_max_tn)
+        tabla_general_max.append(record_mensual_min_tx)
+        tabla_general_max.append(año_record_mensual_min_tx)
+        tabla_general_max.append(record_mensual_max_tx)
+        tabla_general_max.append(año_record_mensual_max_tx)        
+        
+        A=tabulate.tabulate(tabla_general_min,tablefmt="github")
+        B=tabulate.tabulate(tabla_general_max,tablefmt="github")
+
+        print(A)
+        print(B)
+
+    tabla_general_min_med_transpuesta=list(map(list, zip(*tabla_general_min)))
+    tabla_general_max_med_transpuesta=list(map(list, zip(*tabla_general_max)))
+    return [tabla_general_min_med_transpuesta,tabla_general_max_med_transpuesta]
