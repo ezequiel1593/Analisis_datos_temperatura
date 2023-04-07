@@ -8,17 +8,21 @@ import matplotlib.pyplot as plt
 import statistics
 import seaborn as sns
 
-
+#Con esta función obtengo el dataframe con los datos.
 def obtencion_datos(nombre_del_archivo):
-
+    
+    #Lectura del archivo. Remuevo la primera fila, que es la del encabezado.
+    
     archivo_con_datos="{}.xlsx".format(nombre_del_archivo)
     datos=pd.read_excel(archivo_con_datos, header=None)
     datos=datos.drop([0])
     
+    #Convierto a float los datos de temperatura.
     for i in range(0,3):
         datos[i]=datos[i].astype(int)
     datos[3]=datos[3].astype(float).round(1)
     datos[4]=datos[4].astype(float).round(1)
-
+    
+    #En este set de datos, la fecha más antigua es del año 1906 y la más reciente es del 2022.
     datos_a_trabajar=datos[(datos.iloc[:, 0] >= 1906) & (datos.iloc[:, 0] <= 2023)]
     return datos_a_trabajar
