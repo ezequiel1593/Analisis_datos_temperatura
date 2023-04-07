@@ -1,0 +1,36 @@
+#Se muestra una tabla con la cantidad de datos terminados en .0 y en .5, una tabla para las mínimas y otra para las máximas.
+def cantidad_datos_redondeados(nombre_del_archivo):
+    
+    obtencion_datos(nombre_del_archivo,año_inicio,año_final)
+
+    año_inicio=datos_a_trabajar.iat[0,0]
+    año_final=datos_a_trabajar.iat[len(datos_a_trabajar)-1,0]
+
+    tabla_general_min=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+    tabla_general_max=[['Año','E','F','M','A','M','J','J','A','S','O','N','D']]
+
+    for año in range(año_inicio,año_final + 1):
+        
+        cantidad_min_por_mes=[año]
+        cantidad_max_por_mes=[año]
+        
+        for mes in range (1,13):
+            
+            minimas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][4])
+            decimales_minimas=[abs(x%1) for x in minimas]
+            total_casos_min=sum((x == 0.0 or x ==0.5) for x in decimales_minimas)
+            cantidad_min_por_mes.append(total_casos_min)
+                
+            maximas=list(datos_a_trabajar.loc[(datos_a_trabajar[0] == año) &(datos_a_trabajar[1] == mes)][3])
+            decimales_maximas=[abs(x%1) for x in maximas]
+            total_casos_max=sum((x == 0.0 or x ==0.5) for x in decimales_maximas)
+            cantidad_max_por_mes.append(total_casos_max)
+                
+        tabla_general_min.append(cantidad_min_por_mes)
+        tabla_general_max.append(cantidad_max_por_mes)
+
+    A=tabulate.tabulate(tabla_general_min,tablefmt="github")
+    B=tabulate.tabulate(tabla_general_max,tablefmt="github")
+
+    print(A)
+    print(B)
