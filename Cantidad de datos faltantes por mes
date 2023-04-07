@@ -1,3 +1,4 @@
+#Se muestra en una tabla para las mínimas y otra para las máximas, la cantidad de datos faltantes en cada mes de la serie.
 def cantidad_datos_faltantes_por_mes(nombre_del_archivo):
     
     datos_a_trabajar=obtencion_datos(nombre_del_archivo)
